@@ -1,6 +1,6 @@
 # ShopNest Support — Rishika
 
-A multilingual, escalation-aware AI customer support agent for **ShopNest**, an e-commerce platform. Rishika handles Tier-1 queries (orders, returns, payments) in 8 languages and automatically routes sensitive issues (fraud, security, PR) to the right human team with a structured internal handover summary.
+A multilingual, escalation-aware AI customer support agent for **ShopNest**, an e-commerce platform. Rishika handles Tier-1 queries (orders, returns, payments) in 10 languages (English, Hindi, French, Spanish, Arabic, Mandarin Chinese, Portuguese, German, Japanese, Russian) and automatically routes sensitive issues (fraud, security, PR) to the right human team with a structured internal handover summary.
 
 ---
 
