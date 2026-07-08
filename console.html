@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopNest Support Console — Ops View</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e8e6e0; min-height: 100vh; }
+.header { background: #1a1d27; border-bottom: 1px solid #2a2d3a; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+.avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #6c63ff, #a78bfa); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+.hinfo { flex: 1; }
+.hname { font-size: 14px; font-weight: 600; color: #f0ede8; }
+.hsub { font-size: 11px; color: #6b7280; margin-top: 1px; }
+.sdot { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; }
+.back-btn { background: #1e2235; border: 1px solid #2a2d3a; border-radius: 8px; padding: 7px 14px; font-size: 12px; color: #a78bfa; text-decoration: none; transition: all 0.15s; }
+.back-btn:hover { background: #6c63ff22; border-color: #6c63ff; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.kpi { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 12px; padding: 18px 20px; }
+.kpi-label { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; color: #f0ede8; }
+.kpi-sub { font-size: 11px; color: #4b5563; margin-top: 4px; }
+.kpi.accent .kpi-value { color: #a78bfa; }
+.grid2 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; margin-bottom: 16px; }
+@media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+.panel { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 12px; padding: 18px 20px; }
+.panel-title { font-size: 13px; font-weight: 600; color: #f0ede8; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+.live-tag { font-size: 10px; color: #22c55e; background: #22c55e1a; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+.ticket { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #22263422; font-size: 12px; }
+.ticket:last-child { border-bottom: none; }
+.ticket-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.ticket-dot.critical { background: #ef4444; }
+.ticket-dot.high { background: #f59e0b; }
+.ticket-text { flex: 1; color: #d1d0cc; }
+.ticket-lang { font-size: 10px; color: #6b7280; background: #0f1117; padding: 2px 7px; border-radius: 5px; border: 1px solid #2a2d3a; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 12px; }
+.bar-label { width: 90px; color: #9ca3af; flex-shrink: 0; }
+.bar-track { flex: 1; height: 8px; background: #0f1117; border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, #6c63ff, #a78bfa); border-radius: 4px; }
+.bar-pct { width: 38px; text-align: right; color: #6b7280; font-size: 11px; flex-shrink: 0; }
+.pipeline-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 4px; }
+.pipe-stage { background: #0f1117; border: 1px solid #2a2d3a; border-radius: 8px; padding: 12px 10px; text-align: center; }
+.pipe-num { font-size: 20px; font-weight: 700; }
+.pipe-num.new { color: #f59e0b; }
+.pipe-num.review { color: #a78bfa; }
+.pipe-num.escalated { color: #ef4444; }
+.pipe-num.resolved { color: #22c55e; }
+.pipe-label { font-size: 10px; color: #6b7280; margin-top: 4px; }
+.chat-mock { background: #0f1117; border-radius: 8px; padding: 12px; margin-top: 4px; }
+.chat-bubble { padding: 8px 12px; border-radius: 10px; font-size: 12px; margin-bottom: 8px; max-width: 85%; line-height: 1.4; }
+.chat-bubble.in { background: #1e2235; border: 1px solid #2a2d3a; color: #d1d0cc; }
+.chat-bubble.out { background: #6c63ff; color: #fff; margin-left: auto; }
+.footnote { font-size: 10px; color: #4b5563; margin-top: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="avatar">🌸</div>
+  <div class="hinfo">
+    <div class="hname"><span class="sdot"></span>ShopNest Support Console</div>
+    <div class="hsub">Internal Ops View · Not visible to customers</div>
+  </div>
+</div>
+<div style="background:#13161f;border-bottom:1px solid #1e2235;padding:8px 16px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+  <a href="landing.html" style="background:#1e2235;border:1px solid #2a2d3a;border-radius:20px;padding:5px 12px;font-size:12px;color:#9ca3af;text-decoration:none;">Welcome</a>
+  <a href="chat.html" style="background:#1e2235;border:1px solid #2a2d3a;border-radius:20px;padding:5px 12px;font-size:12px;color:#9ca3af;text-decoration:none;">Chat</a>
+  <a href="console.html" style="background:#6c63ff22;border:1px solid #6c63ff;border-radius:20px;padding:5px 12px;font-size:12px;color:#a78bfa;text-decoration:none;">Support Console</a>
+  <a href="faq.html" style="background:#1e2235;border:1px solid #2a2d3a;border-radius:20px;padding:5px 12px;font-size:12px;color:#9ca3af;text-decoration:none;">FAQ &amp; Policies</a>
+  <a href="benchmarks.html" style="background:#1e2235;border:1px solid #2a2d3a;border-radius:20px;padding:5px 12px;font-size:12px;color:#9ca3af;text-decoration:none;">Benchmarks</a>
+  <a href="escalation.html" style="background:#1e2235;border:1px solid #2a2d3a;border-radius:20px;padding:5px 12px;font-size:12px;color:#9ca3af;text-decoration:none;">Escalation Rules</a>
+</div>
+
+<div class="wrap">
+  <div class="kpi-row">
+    <div class="kpi accent">
+      <div class="kpi-label">CSAT Score</div>
+      <div class="kpi-value">4.4 / 5</div>
+      <div class="kpi-sub">avg. multilingual reply quality</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Active Tickets</div>
+      <div class="kpi-value">12</div>
+      <div class="kpi-sub">currently in queue</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Escalated Today</div>
+      <div class="kpi-value">3</div>
+      <div class="kpi-sub">routed to human teams</div>
+    </div>
+    <div class="kpi accent">
+      <div class="kpi-label">Escalation Accuracy</div>
+      <div class="kpi-value">92.5%</div>
+      <div class="kpi-sub">across 100-query benchmark</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg Handle Time</div>
+      <div class="kpi-value">8.2s</div>
+      <div class="kpi-sub">per response</div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-title">Ticket Queue <span class="live-tag">● Live</span></div>
+      <div class="ticket">
+        <span class="ticket-dot critical"></span>
+        <span class="ticket-text">Account hacked, order placed without consent</span>
+        <span class="ticket-lang">ES</span>
+      </div>
+      <div class="ticket">
+        <span class="ticket-dot high"></span>
+        <span class="ticket-text">Refund dispute, consumer court mention</span>
+        <span class="ticket-lang">HI</span>
+      </div>
+      <div class="ticket">
+        <span class="ticket-dot critical"></span>
+        <span class="ticket-text">Data privacy concern raised by customer</span>
+        <span class="ticket-lang">DE</span>
+      </div>
+      <div class="ticket">
+        <span class="ticket-dot high"></span>
+        <span class="ticket-text">Package delayed 5 days, customer frustrated</span>
+        <span class="ticket-lang">JA</span>
+      </div>
+      <div class="ticket">
+        <span class="ticket-dot high"></span>
+        <span class="ticket-text">Coupon code not applying at checkout</span>
+        <span class="ticket-lang">ZH</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Live Chat Preview</div>
+      <div class="chat-mock">
+        <div class="chat-bubble out">मुझे मेरा ऑर्डर वापस करना है, कैसे करूं?</div>
+        <div class="chat-bubble in">बिल्कुल 😊 आप 30 दिनों के अंदर रिटर्न कर सकते हैं...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="panel-title">Ticket Language Distribution</div>
+      <div class="bar-row"><span class="bar-label">English</span><div class="bar-track"><div class="bar-fill" style="width:34%"></div></div><span class="bar-pct">34%</span></div>
+      <div class="bar-row"><span class="bar-label">Hindi</span><div class="bar-track"><div class="bar-fill" style="width:16%"></div></div><span class="bar-pct">16%</span></div>
+      <div class="bar-row"><span class="bar-label">Spanish</span><div class="bar-track"><div class="bar-fill" style="width:11%"></div></div><span class="bar-pct">11%</span></div>
+      <div class="bar-row"><span class="bar-label">French</span><div class="bar-track"><div class="bar-fill" style="width:9%"></div></div><span class="bar-pct">9%</span></div>
+      <div class="bar-row"><span class="bar-label">German</span><div class="bar-track"><div class="bar-fill" style="width:8%"></div></div><span class="bar-pct">8%</span></div>
+      <div class="bar-row"><span class="bar-label">Arabic</span><div class="bar-track"><div class="bar-fill" style="width:7%"></div></div><span class="bar-pct">7%</span></div>
+      <div class="bar-row"><span class="bar-label">Mandarin</span><div class="bar-track"><div class="bar-fill" style="width:6%"></div></div><span class="bar-pct">6%</span></div>
+      <div class="bar-row"><span class="bar-label">Portuguese</span><div class="bar-track"><div class="bar-fill" style="width:5%"></div></div><span class="bar-pct">5%</span></div>
+      <div class="bar-row"><span class="bar-label">Japanese</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-pct">2%</span></div>
+      <div class="bar-row"><span class="bar-label">Russian</span><div class="bar-track"><div class="bar-fill" style="width:2%"></div></div><span class="bar-pct">2%</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Escalation Pipeline</div>
+      <div class="pipeline-row">
+        <div class="pipe-stage"><div class="pipe-num new">7</div><div class="pipe-label">New</div></div>
+        <div class="pipe-stage"><div class="pipe-num review">9</div><div class="pipe-label">In Review</div></div>
+        <div class="pipe-stage"><div class="pipe-num escalated">3</div><div class="pipe-label">Escalated</div></div>
+        <div class="pipe-stage"><div class="pipe-num resolved">14</div><div class="pipe-label">Resolved Today</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footnote">Internal operations view · Figures reflect the 100-query benchmark (Section 5 of project documentation) plus illustrative live queue data</div>
+</div>
+</body>
+</html>
